@@ -89,6 +89,76 @@ other things. This is bad design, an example of low cohesion. Implement and use 
 printLocationInfo method in your project, eliminating this code repetition. Test your changes.
 
 5b.
+private void printLocationInfo()
+    {
+        System.out.println("You are " + currentRoom.getDescription());
+        System.out.print("Exits: ");
+        if(currentRoom.northExit != null) {
+            System.out.print("north ");
+        }
+        if(currentRoom.eastExit != null) {
+            System.out.print("east ");
+        }
+        if(currentRoom.southExit != null) {
+            System.out.print("south ");
+        }
+        if(currentRoom.westExit != null) {
+            System.out.print("west ");
+        }
+    }
+
+/**
+     * Print out the opening message for the player.
+     */
+    private void printWelcome()
+    {
+        System.out.println();
+        System.out.println("Welcome to the World of Zuul!");
+        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        printLocationInfo();
+        System.out.println();
+    }
+
+/** 
+     * Try to go in one direction. If there is an exit, enter
+     * the new room, otherwise print an error message.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know where to go...
+            System.out.println("Go where?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        // Try to leave current room.
+        Room nextRoom = null;
+        if(direction.equals("north")) {
+            nextRoom = currentRoom.northExit;
+        }
+        if(direction.equals("east")) {
+            nextRoom = currentRoom.eastExit;
+        }
+        if(direction.equals("south")) {
+            nextRoom = currentRoom.southExit;
+        }
+        if(direction.equals("west")) {
+            nextRoom = currentRoom.westExit;
+        }
+
+        if (nextRoom == null) {
+            System.out.println("There is no door!");
+        }
+        else {
+            currentRoom = nextRoom;
+            printLocationInfo();
+            System.out.println();
+        }
+    }
 
 6. Apply the concepts of encapsulation by making the following changes to the Room class. All 
 fields should be private, and there should be an acessor method to access them. Then you need 
