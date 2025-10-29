@@ -14,11 +14,11 @@
  */
 public class Room 
 {
-    public String description;
-    public Room northExit;
-    public Room southExit;
-    public Room eastExit;
-    public Room westExit;
+    private String description;
+    private Room northExit;
+    private Room southExit;
+    private Room eastExit;
+    private Room westExit;
 
     /**
      * Create a room described "description". Initially, it has no exits. 
@@ -52,6 +52,18 @@ public class Room
         if(west != null) {
             westExit = west;
         }
+    }
+    
+    /** * 
+     * Return a description of the room’s exits, 
+     * for example, "Exits: north west". 
+     * @return A description of the available exits. 
+    */
+     
+    public String getExitString()
+    {
+        
+        return "lol";
     }
 
     /**
