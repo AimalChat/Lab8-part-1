@@ -172,6 +172,55 @@ using
 Room nextRoom = currentRoom.getExit(direction);
 
 6b.
+/** * 
+     * Return a description of the room’s exits, 
+     * for example, "Exits: north west". 
+     * @return A description of the available exits. 
+    */
+     
+    public Room getExit(String direction)
+    {
+        if(direction.equals("north")) {
+            return northExit;
+        }
+        if(direction.equals("east")) {
+            return eastExit;
+        }
+        if(direction.equals("south")) {
+            return southExit;
+        }
+        if(direction.equals("west")) {
+            return westExit;
+        }
+        return null;
+    }
+
+/** 
+     * Try to go in one direction. If there is an exit, enter
+     * the new room, otherwise print an error message.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know where to go...
+            System.out.println("Go where?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        // Try to leave current room.
+        Room nextRoom = currentRoom.getExit(direction);
+
+        if (nextRoom == null) {
+            System.out.println("There is no door!");
+        }
+        else {
+            currentRoom = nextRoom;
+            currentRoom.getExitString(currentRoom);
+            System.out.println();
+        }
+    }
 
 7. Make a similar change to the printLocationInfo method of Game so that details of the exits 
 are now prepared by the Room rather than the Game. Define a method in Room with the following 
@@ -183,7 +232,69 @@ header:
 public String getExitString()
 
 7b.
+/** * 
+     * Return a description of the room’s exits, 
+     * for example, "Exits: north west". 
+     * @return A description of the available exits. 
+    */
+     
+    public Room getExit(String direction)
+    {
+        if(direction.equals("north")) {
+            return northExit;
+        }
+        if(direction.equals("east")) {
+            return eastExit;
+        }
+        if(direction.equals("south")) {
+            return southExit;
+        }
+        if(direction.equals("west")) {
+            return westExit;
+        }
+        return null;
+    }
 
+/** 
+     * Try to go in one direction. If there is an exit, enter
+     * the new room, otherwise print an error message.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know where to go...
+            System.out.println("Go where?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        // Try to leave current room.
+        Room nextRoom = currentRoom.getExit(direction);
+
+        if (nextRoom == null) {
+            System.out.println("There is no door!");
+        }
+        else {
+            currentRoom = nextRoom;
+            currentRoom.getExitString(currentRoom);
+            System.out.println();
+        }
+    }
+
+/**
+     * Print out the opening message for the player.
+     */
+    private void printWelcome()
+    {
+        System.out.println();
+        System.out.println("Welcome to the World of Zuul!");
+        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        currentRoom.getExitString(currentRoom);
+        System.out.println();
+    }
 8. Now we want to add up and down exit directions to the Room class. Since the internal 
 representation in Room has been completely decoupled from the interface, we can make changes 
 without breaking the Game class. The first change you need to make is to replace all separate 
@@ -198,25 +309,80 @@ public void setExit(String direction, Room neighbor) {
  exits.put(direction, neighbor);
 }
  And in the Game class, instead of writing
- lab.setExits(ourside, office, null, null);
+ lab.setExits(outside, office, null, null);
  we now write
  lab.setExit(“north”, outside);
  lab.setExit(“east”, office);
  With that, you should be ready to add “up” and “down” as exits with no problem.
 
 8b.
+public void setExit(String direction, Room nextRoom)
+    {
+        exits.put(direction, nextRoom);
+    }
+/**
+     * Create all the rooms and link their exits together.
+     */
+    public void createRooms()
+    {
+        Room outside, theater, pub, lab, office;
+      
+        // create the rooms
+        outside = new Room("outside the main entrance of the university");
+        theater = new Room("in a lecture theater");
+        pub = new Room("in the campus pub");
+        lab = new Room("in a computing lab");
+        office = new Room("in the computing admin office");
+        
+        // initialise room exits
+        //outside.setExits(null, theater, lab, pub);
+        outside.setExit("east", theatre);
+        outside.setExit("south", lab);
+        outside.setExit("west", pub);
+        //theater.setExits(null, null, null, outside);
+        theatre.setExit("west", outside);
+        //pub.setExits(null, outside, null, null);
+        pub.setExit("east", outside);
+        //lab.setExits(outside, office, null, null);
+        lab.setExit("north", outside);
+        lab.setExit("east", office);
+        //office.setExits(null, null, null, lab);
+        office.setExit("west", lab);
+        
+        currentRoom = outside;
+    }
+
 
 9. Look up the keySet method in the documentation of HashMap. What does it do? 
 
-9b.
+9b. It returns a set of all keys in a HashMap! Cold be useful to further refine the help in the valid 
+commands class?
 
 10. Use keySet in your re-write of the getExitString method of the Room class, to iterate 
 over the map of exits and concatenate directions into a single String, which is returned. 
 
 10b.
+/**
+    * Return a description of the room’s exits,
+    * for example, "Exits: north west".
+    * @return A description of the available exits.
+    */
+    public void getExitString(Room currentRoom)
+    {
+        System.out.println("You are " + currentRoom.getDescription());
+        System.out.print("Exits: ");
+        Set<String> directions = exits.keySet();
+        StringBuilder exitString = new StringBuilder();
+        for(String direction : directions)
+        {
+            exitString.append(direction + ", ");
+        }
+        exitString.deleteCharAt(exitString.length() - 2);
+        System.out.print(exitString);
+    }
 
 11. Loose coupling demands that changes to the Room class do not require changes to the Game 
-class. The Room class holds information about a room, it should alos produce a description 
+class. The Room class holds information about a room, it should also produce a description 
 for a room. Add the following method to the Room class and make the Game class use it where 
 appropriate.
  public String getLongDescription(){
@@ -224,6 +390,46 @@ appropriate.
  }
 
 11b.
+/**
+     * Print out the opening message for the player.
+     */
+    private void printWelcome()
+    {
+        System.out.println();
+        System.out.println("Welcome to the World of Zuul!");
+        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        System.out.println(currentRoom.getLongDescription());
+        System.out.println();
+    }
+
+/** 
+     * Try to go in one direction. If there is an exit, enter
+     * the new room, otherwise print an error message.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know where to go...
+            System.out.println("Go where?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        // Try to leave current room.
+        Room nextRoom = currentRoom.getExit(direction);
+
+        if (nextRoom == null) {
+            System.out.println("There is no door!");
+        }
+        else {
+            currentRoom = nextRoom;
+            System.out.println(currentRoom.getLongDescription());
+            System.out.println();
+        }
+    }
 
 12. Draw an object diagram with all objects in your game, the way they are just after 
 starting the game. 
