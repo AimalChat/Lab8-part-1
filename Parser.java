@@ -8,7 +8,7 @@ import java.util.Scanner;
  * command. Every time it is called it reads a line from the terminal and
  * tries to interpret the line as a two word command. It returns the command
  * as an object of class Command.
- *
+ *                                
  * The parser has a set of known command words. It checks user input against
  * the known commands, and if the input is not one of the known commands, it
  * returns a command object that is marked as an unknown command.
@@ -18,7 +18,7 @@ import java.util.Scanner;
  */
 public class Parser 
 {
-    private CommandWords commands;  // holds all valid command words
+    //private CommandWords commands;  // holds all valid command words
     private Scanner reader;         // source of command input
 
     /**
@@ -26,8 +26,20 @@ public class Parser
      */
     public Parser() 
     {
-        commands = new CommandWords();
+        //commands = new CommandWords();
         reader = new Scanner(System.in);
+    }
+    
+    public String showCommandWords()
+    {
+        StringBuilder listCommands = new StringBuilder();
+        for(String command : CommandWords.getValidCommands())
+        {
+            listCommands.append(command + ", ");
+        }
+        listCommands.deleteCharAt(listCommands.length() - 2);
+        String listOfCommands = listCommands.toString();
+        return listOfCommands;
     }
 
     /**
@@ -57,7 +69,7 @@ public class Parser
 
         // Now check whether this word is known. If so, create a command
         // with it. If not, create a "null" command (for unknown command).
-        if(commands.isCommand(word1)) {
+        if(CommandWords.isCommand(word1)) {
             return new Command(word1, word2);
         }
         else {

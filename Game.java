@@ -112,7 +112,12 @@ public class Game
         }
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
+        }else if (commandWord.equals("look")) {
+            lookAround();
+        }else if (commandWord.equals("eat")) {
+            eat();
         }
+        
 
         return wantToQuit;
     }
@@ -130,7 +135,7 @@ public class Game
         System.out.println("around at the university.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit help");
+        System.out.println("   " + parser.showCommandWords());
     }
 
     /** 
@@ -158,6 +163,26 @@ public class Game
             System.out.println(currentRoom.getLongDescription());
             System.out.println();
         }
+    }
+    
+    /** 
+     * "look" was entered. Check the rest of the command to see
+     * whether we really quit the game.
+     * @return true, if this command quits the game, false otherwise.
+     */
+    private void lookAround() 
+    {
+        System.out.println(currentRoom.getLongDescription());
+    }
+    
+    /** 
+     * "eat" was entered. Here we print a message saying the
+     * player has eaten something.
+     */
+    private void eat() 
+    {
+        System.out.println("You have eaten now and are now freed of the painful");
+        System.out.println("hunger plaguing your mind");
     }
 
     /** 
