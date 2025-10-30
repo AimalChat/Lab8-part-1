@@ -445,13 +445,106 @@ print out the description of the room and the exits again (we “look around the
 need to modify classes CommandWords and Game. 
 
 14b.
+* 
+ * This class holds an enumeration of all command words known to the game.
+ * It is used to recognise commands as they are typed in.
+ *
+ * @author  Michael Kölling and David J. Barnes
+ * @version 7.0
+ */
+
+public class CommandWords
+{
+    // A constant array that holds all valid command words.
+    private static final String[] validCommands = {
+        "go", "quit", "help", "look"
+    };
+
+//In game Class
+    /**
+     * Given a command, process (that is: execute) the command.
+     * @param command The command to be processed.
+     * @return true If the command ends the game, false otherwise.
+     */
+    private boolean processCommand(Command command) 
+    {
+        boolean wantToQuit = false;
+
+        if(command.isUnknown()) {
+            System.out.println("I don't know what you mean...");
+            return false;
+        }
+
+        String commandWord = command.getCommandWord();
+        if (commandWord.equals("help")) {
+            printHelp();
+        }
+        else if (commandWord.equals("go")) {
+            goRoom(command);
+        }
+        else if (commandWord.equals("quit")) {
+            wantToQuit = quit(command);
+        }else if (commandWord.equals("look")) {
+            lookAround();
+        }
+
+        return wantToQuit;
+    }
+
+/** 
+     * "look" was entered. Check the rest of the command to see
+     * whether we really quit the game.
+     * @return true, if this command quits the game, false otherwise.
+     */
+    private void lookAround() 
+    {
+        System.out.println(currentRoom.getLongDescription());
+    }
 
 15. Add another command to your game. For a start, you could choose something simple, such as 
 a command eat that, when executed, just prints out “You have eaten now and you are not hungry 
 any more.” Later, we can improve this so that you really get hungry over time and you need to 
 find food. 
 
-15b.
+15b. 
+/**
+     * Given a command, process (that is: execute) the command.
+     * @param command The command to be processed.
+     * @return true If the command ends the game, false otherwise.
+     */
+    private boolean processCommand(Command command) 
+    {
+        boolean wantToQuit = false;
+
+        if(command.isUnknown()) {
+            System.out.println("I don't know what you mean...");
+            return false;
+        }
+
+        String commandWord = command.getCommandWord();
+        if (commandWord.equals("help")) {
+            printHelp();
+        }
+        else if (commandWord.equals("go")) {
+            goRoom(command);
+        }
+        else if (commandWord.equals("quit")) {
+            wantToQuit = quit(command);
+        }else if (commandWord.equals("look")) {
+            lookAround();
+        }else if (commandWord.equals("eat")) {
+            eat();
+        }
+
+/** 
+     * "eat" was entered. Here we print a message saying the
+     * player has eaten something.
+     */
+    private void eat() 
+    {
+        System.out.println("You have eaten now and are now freed of the painful");
+        System.out.println("hunger plaguing your mind");
+    }
 
 16. Implement an improved version of printing out the command words, that allows the help to 
 automatically recognize new commands added. The CommandWords class should have a showAll 
@@ -459,10 +552,29 @@ method that prints all valid commands. The Game class should not depend on Comma
 (unnecessary coupling), it should access the CommandWords object via its parser attribute. 
 
 16b.
+//method in CommandWords Class
+public String[] getValidCommands()
+    {
+        return validCommands;
+    }
+//this one is in the Parser Class.
+public String showCommandWords()
+    {
+        StringBuilder listCommands = new StringBuilder();
+        for(String command : commands.getValidCommands())
+        {
+            listCommands.append(command + ", ");
+        }
+        listCommands.deleteCharAt(listCommands.length() - 2);
+        String listOfCommands = listCommands.toString();
+        return listOfCommands;
+    }
 
 17. If you now add another new command, do you still need to change the Game class? Why?
 
-17b.
+17b.No, because, all the commands get updated as soon as a command is added. Simply put,
+all data handling related to rpinting out the valid commnands is now exclsively the 
+CommandWords & Parser classes's responsibilty.
 
 18. The CommandWords class has a single static field and no instance data, but its methods 
 are all instance methods. In the light of this, do you think it would it be more appropriate 
@@ -470,3 +582,112 @@ for all of its methods to be static methods, and for the Parser to call those me
 class rather than create an instance of ? 
 What are the pros and cons?
 
+18b.For pros, it helps with writing less lines of code since there is no longer a need for
+the creation of an instance inside of the constructor and declaring it in the objects field,
+which means that there is higher cohesion in the CommandWords class since it is solely 
+responsible for passing its field which is static to other classes. As for cons, it makes 
+the code slightly less readable to the reader of code,because now we simply just use the 
+class without any context, but I dont think its really that much of a bother since the same 
+could be said previously.
+
+//inside of CommandWords
+public static String[] getValidCommands()
+    {
+        return validCommands;
+    }
+
+    /**
+     * Check whether a given String is a valid command word. 
+     * @return true if a given string is a valid command,
+     * false if it isn't.
+     */
+    public static boolean isCommand(String aString)
+    {
+        for(int i = 0; i < validCommands.length; i++) {
+            if(validCommands[i].equals(aString)) {
+                return true;
+            }
+        }
+        // if we get here, the string was not found in the commands
+        return false;
+    }
+//Parser Class
+import java.util.Scanner;
+
+/**
+ * This class is part of the "World of Zuul" application. 
+ * "World of Zuul" is a very simple, text based adventure game.  
+ * 
+ * This parser reads user input and tries to interpret it as an "Adventure"
+ * command. Every time it is called it reads a line from the terminal and
+ * tries to interpret the line as a two word command. It returns the command
+ * as an object of class Command.
+ *
+ * The parser has a set of known command words. It checks user input against
+ * the known commands, and if the input is not one of the known commands, it
+ * returns a command object that is marked as an unknown command.
+ * 
+ * @author  Michael Kölling and David J. Barnes
+ * @version 7.0
+ */
+public class Parser 
+{
+    //private CommandWords commands;  // holds all valid command words
+    private Scanner reader;         // source of command input
+
+    /**
+     * Create a parser to read from the terminal window.
+     */
+    public Parser() 
+    {
+        //commands = new CommandWords();
+        reader = new Scanner(System.in);
+    }
+    
+    public String showCommandWords()
+    {
+        StringBuilder listCommands = new StringBuilder();
+        for(String command : CommandWords.getValidCommands())
+        {
+            listCommands.append(command + ", ");
+        }
+        listCommands.deleteCharAt(listCommands.length() - 2);
+        String listOfCommands = listCommands.toString();
+        return listOfCommands;
+    }
+
+    /**
+     * @return The next command from the user.
+     */
+    public Command getCommand() 
+    {
+        // The full input line.
+        String inputLine;   
+        String word1 = null;
+        String word2 = null;
+
+        // print prompt
+        System.out.print("> ");     
+
+        inputLine = reader.nextLine();
+
+        // Find up to two words on the line.
+        Scanner tokenizer = new Scanner(inputLine);
+        if(tokenizer.hasNext()) {
+            word1 = tokenizer.next();
+            if(tokenizer.hasNext()) {
+                word2 = tokenizer.next();
+                // note: we just ignore the rest of the input line.
+            }
+        }
+
+        // Now check whether this word is known. If so, create a command
+        // with it. If not, create a "null" command (for unknown command).
+        if(CommandWords.isCommand(word1)) {
+            return new Command(word1, word2);
+        }
+        else {
+            return new Command(null, word2); 
+        }
+    }
+}
