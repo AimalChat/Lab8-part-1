@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Set;
+
 /**
  * Class Room - a room in an adventure game.
  *
@@ -15,10 +18,7 @@
 public class Room 
 {
     private String description;
-    private Room northExit;
-    private Room southExit;
-    private Room eastExit;
-    private Room westExit;
+    private HashMap<String, Room> exits;
 
     /**
      * Create a room described "description". Initially, it has no exits. 
@@ -28,6 +28,12 @@ public class Room
     public Room(String description) 
     {
         this.description = description;
+        exits = new HashMap<String,Room>();
+    }
+    
+    public String getLongDescription()
+    {
+        return "You are " + description + ".\n" + getExitString();
     }
 
     /**
@@ -41,17 +47,55 @@ public class Room
     public void setExits(Room north, Room east, Room south, Room west) 
     {
         if(north != null) {
-            northExit = north;
+            exits.put("north", north);
         }
         if(east != null) {
-            eastExit = east;
+            exits.put("east", east);
         }
         if(south != null) {
-            southExit = south;
+            exits.put("south", south);
         }
         if(west != null) {
-            westExit = west;
+            exits.put("west", west);
         }
+    }
+    
+    public void setExit(String direction, Room nextRoom)
+    {
+        exits.put(direction, nextRoom);
+    }
+    
+    public String getExitString()
+    {
+        Set<String> directions = exits.keySet();
+        StringBuilder exitStringv1 = new StringBuilder();
+        exitStringv1.append("Exits: ");
+        for(String direction : directions)
+        {
+            exitStringv1.append(direction + ", ");
+        }
+        exitStringv1.deleteCharAt(exitStringv1.length() - 2);
+        String exitStringv2 = exitStringv1.toString();
+        return exitStringv2;
+    }
+    
+    /**
+    * Return a description of the room’s exits,
+    * for example, "Exits: north west".
+    * @return A description of the available exits.
+    */
+    public void getExitString(Room currentRoom)
+    {
+        System.out.println("You are " + currentRoom.getDescription());
+        System.out.print("Exits: ");
+        Set<String> directions = exits.keySet();
+        StringBuilder exitString = new StringBuilder();
+        for(String direction : directions)
+        {
+            exitString.append(direction + ", ");
+        }
+        exitString.deleteCharAt(exitString.length() - 2);
+        System.out.print(exitString);
     }
     
     /** * 
@@ -60,10 +104,9 @@ public class Room
      * @return A description of the available exits. 
     */
      
-    public String getExitString()
+    public Room getExit(String direction)
     {
-        
-        return "lol";
+        return exits.get(direction);
     }
 
     /**

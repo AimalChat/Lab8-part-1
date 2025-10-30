@@ -19,19 +19,16 @@ public class Game
     private Parser parser;
     private Room currentRoom;
     
-    /**
-     * Create the game and initialise its internal map.
-     */
     public Game() 
     {
         createRooms();
         parser = new Parser();
     }
-
+    
     /**
      * Create all the rooms and link their exits together.
      */
-    private void createRooms()
+    public void createRooms()
     {
         Room outside, theater, pub, lab, office;
       
@@ -43,32 +40,21 @@ public class Game
         office = new Room("in the computing admin office");
         
         // initialise room exits
-        outside.setExits(null, theater, lab, pub);
-        theater.setExits(null, null, null, outside);
-        pub.setExits(null, outside, null, null);
-        lab.setExits(outside, office, null, null);
-        office.setExits(null, null, null, lab);
-
-        // start game outside
-        currentRoom = outside;  
-    }
-    
-    private void printLocationInfo()
-    {
-        System.out.println("You are " + currentRoom.getDescription());
-        System.out.print("Exits: ");
-        if(currentRoom.getExit("north") != null) {
-            System.out.print("north ");
-        }
-        if(currentRoom.getExit("east") != null) {
-            System.out.print("east ");
-        }
-        if(currentRoom.getExit("south") != null) {
-            System.out.print("south ");
-        }
-        if(currentRoom.getExit("west") != null) {
-            System.out.print("west ");
-        }
+        //outside.setExits(null, theater, lab, pub);
+        outside.setExit("east", theater);
+        outside.setExit("south", lab);
+        outside.setExit("west", pub);
+        //theater.setExits(null, null, null, outside);
+        theater.setExit("west", outside);
+        //pub.setExits(null, outside, null, null);
+        pub.setExit("east", outside);
+        //lab.setExits(outside, office, null, null);
+        lab.setExit("north", outside);
+        lab.setExit("east", office);
+        //office.setExits(null, null, null, lab);
+        office.setExit("west", lab);
+        
+        currentRoom = outside;
     }
 
     /**
@@ -99,10 +85,10 @@ public class Game
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("Type 'help' if you need help.");
         System.out.println();
-        printLocationInfo();
+        System.out.println(currentRoom.getLongDescription());
         System.out.println();
     }
-
+    
     /**
      * Given a command, process (that is: execute) the command.
      * @param command The command to be processed.
@@ -162,26 +148,14 @@ public class Game
         String direction = command.getSecondWord();
 
         // Try to leave current room.
-        Room nextRoom = null;
-        if(direction.equals("north")) {
-            nextRoom = currentRoom.northExit;
-        }
-        if(direction.equals("east")) {
-            nextRoom = currentRoom.eastExit;
-        }
-        if(direction.equals("south")) {
-            nextRoom = currentRoom.southExit;
-        }
-        if(direction.equals("west")) {
-            nextRoom = currentRoom.westExit;
-        }
+        Room nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
             System.out.println("There is no door!");
         }
         else {
             currentRoom = nextRoom;
-            printLocationInfo();
+            System.out.println(currentRoom.getLongDescription());
             System.out.println();
         }
     }
