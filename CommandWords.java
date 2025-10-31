@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * This class is part of the "World of Zuul" application. 
  * "World of Zuul" is a very simple, text based adventure game.  
@@ -13,8 +16,28 @@ public class CommandWords
 {
     // A constant array that holds all valid command words.
     private static final String[] validCommands = {
-        "go", "quit", "help", "look", "eat"
+        "go", "quit", "help", "look", "eat", "details"
     };
+    private static final HashMap<String,Integer> LENGTH = new HashMap<>();
+    static 
+    {
+        LENGTH.put("go",2);
+        LENGTH.put("quit",1);
+        LENGTH.put("help",1);
+        LENGTH.put("look",1);
+        LENGTH.put("eat",1);
+        LENGTH.put("details",1);
+    }
+    private static final HashMap<String,String> DESCRIPTION = new HashMap<>();
+    static
+    {
+        DESCRIPTION.put("go", "to move around, must specify direction after 'go'.");
+        DESCRIPTION.put("quit", "to exit game.");
+        DESCRIPTION.put("help", "displays game context & valid commands.");
+        DESCRIPTION.put("look", "to examine current surroundings.");
+        DESCRIPTION.put("eat", "to consume an item");
+        DESCRIPTION.put("details", "this very message shows length%nand a brief explaination of all commands.");
+    }
 
     /**
      * Constructor - initialise the command words.
@@ -40,6 +63,18 @@ public class CommandWords
         String listOfCommands = listCommands.toString();
         System.out.println("Your command words are:");
         System.out.println(listOfCommands);
+    }
+    
+    public static void commandDetails()
+    {
+        StringBuilder commandDetails = new StringBuilder();
+        for(String command : getValidCommands())
+        {
+            commandDetails.append(command + ": ");
+            commandDetails.append(LENGTH.get(command)+ ", " + DESCRIPTION.get(command)+"\n");
+        }
+        String commandsDetails = commandDetails.toString();
+        System.out.println(commandsDetails);
     }
 
     /**

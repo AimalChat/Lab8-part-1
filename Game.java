@@ -116,6 +116,8 @@ public class Game
             lookAround();
         }else if (commandWord.equals("eat")) {
             eat();
+        }else if (commandWord.equals("details")) {
+            showCommandDetails();
         }
         
 
@@ -182,6 +184,11 @@ public class Game
     {
         System.out.println("You have eaten now and are now freed of the painful");
         System.out.println("hunger plaguing your mind");
+    }
+    
+    private void showCommandDetails()
+    {
+        parser.getCommands().commandDetails();
     }
 
     /** 
