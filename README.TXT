@@ -552,23 +552,43 @@ method that prints all valid commands. The Game class should not depend on Comma
 (unnecessary coupling), it should access the CommandWords object via its parser attribute. 
 
 16b.
-//method in CommandWords Class
+//methods in CommandWords Class
 public String[] getValidCommands()
     {
         return validCommands;
     }
-//this one is in the Parser Class.
-public String showCommandWords()
+
+public void showCommandWords()
     {
         StringBuilder listCommands = new StringBuilder();
-        for(String command : commands.getValidCommands())
+        listCommands.append("     ");
+        for(String command : getValidCommands())
         {
-            listCommands.append(command + ", ");
+            listCommands.append(command + "  ");
         }
-        listCommands.deleteCharAt(listCommands.length() - 2);
         String listOfCommands = listCommands.toString();
-        return listOfCommands;
+        System.out.println("Your command words are:");
+        System.out.println(listOfCommands);
     }
+//this one is in Parser Class
+public CommandWords getCommands()
+    {
+        return commands;
+    }
+//In game class
+/**
+     * Print out some help information.
+     * Here we print some stupid, cryptic message and a list of the 
+     * command words.
+     */
+    private void printHelp() 
+    {
+        System.out.println("You are lost. You are alone. You wander");
+        System.out.println("around at the university.");
+        System.out.println();
+        parser.getCommands().showCommandWords();
+    }
+
 
 17. If you now add another new command, do you still need to change the Game class? Why?
 
@@ -642,18 +662,6 @@ public class Parser
     {
         //commands = new CommandWords();
         reader = new Scanner(System.in);
-    }
-    
-    public String showCommandWords()
-    {
-        StringBuilder listCommands = new StringBuilder();
-        for(String command : CommandWords.getValidCommands())
-        {
-            listCommands.append(command + ", ");
-        }
-        listCommands.deleteCharAt(listCommands.length() - 2);
-        String listOfCommands = listCommands.toString();
-        return listOfCommands;
     }
 
     /**
