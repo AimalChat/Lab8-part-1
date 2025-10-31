@@ -28,6 +28,19 @@ public class CommandWords
     {
         return validCommands;
     }
+    
+    public static void showCommandWords()
+    {
+        StringBuilder listCommands = new StringBuilder();
+        listCommands.append("     ");
+        for(String command : getValidCommands())
+        {
+            listCommands.append(command + "  ");
+        }
+        String listOfCommands = listCommands.toString();
+        System.out.println("Your command words are:");
+        System.out.println(listOfCommands);
+    }
 
     /**
      * Check whether a given String is a valid command word. 

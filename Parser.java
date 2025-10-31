@@ -18,7 +18,7 @@ import java.util.Scanner;
  */
 public class Parser 
 {
-    //private CommandWords commands;  // holds all valid command words
+    private CommandWords commands;  // holds all valid command words
     private Scanner reader;         // source of command input
 
     /**
@@ -26,20 +26,13 @@ public class Parser
      */
     public Parser() 
     {
-        //commands = new CommandWords();
+        commands = new CommandWords();
         reader = new Scanner(System.in);
     }
     
-    public String showCommandWords()
+    public CommandWords getCommands()
     {
-        StringBuilder listCommands = new StringBuilder();
-        for(String command : CommandWords.getValidCommands())
-        {
-            listCommands.append(command + ", ");
-        }
-        listCommands.deleteCharAt(listCommands.length() - 2);
-        String listOfCommands = listCommands.toString();
-        return listOfCommands;
+        return commands;
     }
 
     /**
