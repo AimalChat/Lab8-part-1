@@ -1,3 +1,4 @@
+import java.util.Arrays;
 /**
  * This class is part of the "World of Zuul" application. 
  * "World of Zuul" is a very simple, text based adventure game.  
@@ -26,10 +27,11 @@ public class CommandWords
     
     public static String[] getValidCommands()
     {
+        Arrays.sort(validCommands);
         return validCommands;
     }
     
-    public static void showCommandWords()
+    public static String showCommandWords()
     {
         StringBuilder listCommands = new StringBuilder();
         listCommands.append("     ");
@@ -39,7 +41,7 @@ public class CommandWords
         }
         String listOfCommands = listCommands.toString();
         System.out.println("Your command words are:");
-        System.out.println(listOfCommands);
+        return listOfCommands;
     }
 
     /**
