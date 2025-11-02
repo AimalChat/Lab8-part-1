@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Stack;
+
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -18,6 +21,9 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private static final int WEIGHTLIMIT = 15;
+    private static final ArrayList<Item> items = Item.getItemList();
+    private Stack<Room> history = new Stack<>();//30
     
     public Game() 
     {
@@ -40,21 +46,18 @@ public class Game
         office = new Room("in the computing admin office");
         
         // initialise room exits
-        //outside.setExits(null, theater, lab, pub);
         outside.setExit("east", theater);
         outside.setExit("south", lab);
         outside.setExit("west", pub);
-        //theater.setExits(null, null, null, outside);
         theater.setExit("west", outside);
-        //pub.setExits(null, outside, null, null);
         pub.setExit("east", outside);
-        //lab.setExits(outside, office, null, null);
         lab.setExit("north", outside);
         lab.setExit("east", office);
-        //office.setExits(null, null, null, lab);
         office.setExit("west", lab);
-        
+        //initialise items
+        pub.addItem(items.get(0));
         currentRoom = outside;
+        history.push(currentRoom);//30
     }
 
     /**
@@ -114,8 +117,14 @@ public class Game
             wantToQuit = quit(command);
         }else if (commandWord.equals("look")) {
             lookAround();
-        }else if (commandWord.equals("eat")) {
-            eat();
+        }else if (commandWord.equals("use")) {
+            use();
+        }else if (commandWord.equals("details")) {//21
+            showCommandDetails();
+        }else if (commandWord.equals("use")) {
+            use(command);
+        }else if(commandWord.equals("back")) {//26
+            goBack();
         }
         
 
@@ -123,6 +132,18 @@ public class Game
     }
 
     // implementations of user commands:
+    
+    public void goBack()//30
+    {
+        if(history.size() <= 1){
+            System.out.println("Go back where?");
+        }else{
+            history.pop();
+            currentRoom = history.peek();
+            System.out.println("You move back to the previous room.");
+            lookAround();
+        }
+    }
 
     /**
      * Print out some help information.
@@ -135,6 +156,22 @@ public class Game
         System.out.println("around at the university.");
         System.out.println();
         System.out.println(CommandWords.showCommandWords());
+    }
+    
+    /** 
+     * "eat" was entered. Here we print a message saying the
+     * player has eaten something.
+     */
+    private void use(Command command) 
+    {
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know where to go...
+            System.out.println("Use what?");
+            return;
+        }
+        
+        String item = command.getSecondWord();
+        
     }
 
     /** 
@@ -159,6 +196,7 @@ public class Game
         }
         else {
             currentRoom = nextRoom;
+            history.push(currentRoom);//30
             System.out.println(currentRoom.getLongDescription());
             System.out.println();
         }
@@ -171,17 +209,23 @@ public class Game
      */
     private void lookAround() 
     {
-        System.out.println(currentRoom.getLongDescription());
+        System.out.println(currentRoom.getLongDescription() +"\n"+
+        currentRoom.getItemsString());
     }
     
     /** 
      * "eat" was entered. Here we print a message saying the
      * player has eaten something.
      */
-    private void eat() 
+    private void use() 
     {
         System.out.println("You have eaten now and are now freed of the painful");
         System.out.println("hunger plaguing your mind");
+    }
+    
+    private void showCommandDetails()//21
+    {
+        parser.getCommands().commandDetails();
     }
 
     /** 

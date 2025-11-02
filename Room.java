@@ -1,5 +1,7 @@
 import java.util.HashMap;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class Room - a room in an adventure game.
@@ -19,6 +21,7 @@ public class Room
 {
     private String description;
     private HashMap<String, Room> exits;
+    private ArrayList<Item> itemsInRoom;
 
     /**
      * Create a room described "description". Initially, it has no exits. 
@@ -29,6 +32,7 @@ public class Room
     {
         this.description = description;
         exits = new HashMap<String,Room>();
+        itemsInRoom = new ArrayList<Item>();
     }
     
     public String getLongDescription()
@@ -65,6 +69,34 @@ public class Room
         exits.put(direction, nextRoom);
     }
     
+    public void addItem(Item item)
+    {
+        itemsInRoom.add(item);
+    }
+    
+    public String getItemsString()
+    {
+        List<String> listOfItems = new ArrayList<>();
+        StringBuilder itemsString = new StringBuilder();
+        itemsString.append("You see: ");
+        if(itemsInRoom.isEmpty())
+        {
+            itemsString.append("nothing of value here.");
+            return itemsString.toString().trim();
+        }else
+        {
+            for(Item item : itemsInRoom)
+            {
+                //itemsString.append(item.getItemName() + ", ");
+                listOfItems.add(item.getItemName());
+            }
+            itemsString.append(String.join(", ",listOfItems));
+            return itemsString.toString();
+            //itemsString.deleteCharAt(itemsString.length() - 2);
+            //return itemsString.toString().trim();
+        }
+    }
+    
     public String getExitString()
     {
         Set<String> directions = exits.keySet();
@@ -83,6 +115,7 @@ public class Room
     * Return a description of the room’s exits,
     * for example, "Exits: north west".
     * @return A description of the available exits.
+    * FOR PART 1 OF LAB.
     */
     public void getExitString(Room currentRoom)
     {
